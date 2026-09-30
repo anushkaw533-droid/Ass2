@@ -728,3 +728,1213 @@ p {
 
 =================================================================================
 ===============================
+11.
+Product List using Jinja2 Loop and Conditional Statements Create a Flask
+application with the following templates:base.html,home.html,products.html .Create
+product data containing product name, price, and availability in app.py. Use a Jinja2
+for loop to display the products and conditional statements to display Available or
+Out of Stock. Use template inheritance and create a CSS file in the static/CSS folder.
+Verify the output in the browser.
+
+  project/
+│
+├── app.py
+│
+├── templates/
+│   ├── base.html
+│   ├── home.html
+│   └── products.html
+│
+└── static/
+    └── CSS/
+        └── style.css
+
+  
+1️⃣ app.py................................
+  
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+products = [
+    {"name": "Laptop", "price": 50000, "available": True},
+    {"name": "Mobile", "price": 20000, "available": True},
+    {"name": "Headphones", "price": 2000, "available": False},
+    {"name": "Keyboard", "price": 1000, "available": True}
+]
+
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/products')
+def product_list():
+    return render_template('products.html', products=products)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+  
+2️⃣ templates/base.html...............................
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product List</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='CSS/style.css') }}">
+</head>
+<body>
+
+    <h1>Product Management System</h1>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/products">Products</a>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>
+
+3️⃣ templates/home.html.................................
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Home Page</h2>
+<p>Welcome to Product Management System</p>
+
+{% endblock %}
+
+4️⃣ templates/products.html.........................................
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Product List</h2>
+
+{% for product in products %}
+
+<p>
+    <b>Product Name:</b> {{ product.name }} <br>
+    <b>Price:</b> ₹{{ product.price }} <br>
+
+    {% if product.available %}
+        <b>Status:</b> Available
+    {% else %}
+        <b>Status:</b> Out of Stock
+    {% endif %}
+</p>
+
+<hr>
+
+{% endfor %}
+
+{% endblock %}
+ 
+5️⃣ static/CSS/style.css................................
+
+body {
+    font-family: Arial;
+    margin: 30px;
+    text-align: center;
+}
+
+h1 {
+    color: blue;
+}
+
+nav {
+    margin: 20px;
+}
+
+nav a {
+    margin: 15px;
+    text-decoration: none;
+}
+
+==============================================================================================
+================================================================================
+
+12. Create a Flask Employee Information Form containing Employee ID, Employee Name,
+Department, and Designation. Accept the form data using the POST method
+and display the submitted information on the web page.
+............................
+  from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route('/')
+def form():
+    return render_template('form.html')
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    emp_id = request.form['emp_id']
+    name = request.form['name']
+    department = request.form['department']
+    designation = request.form['designation']
+
+    return f"""
+    <h2>Employee Information</h2>
+    <p>Employee ID: {emp_id}</p>
+    <p>Employee Name: {name}</p>
+    <p>Department: {department}</p>
+    <p>Designation: {designation}</p>
+    """
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+.................................
+templates/form.html...................................
+  
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Information Form</title>
+</head>
+<body>
+
+<h2>Employee Information Form</h2>
+
+<form action="/submit" method="POST">
+
+    Employee ID:
+    <input type="text" name="emp_id"><br><br>
+
+    Employee Name:
+    <input type="text" name="name"><br><br>
+
+    Department:
+    <input type="text" name="department"><br><br>
+
+    Designation:
+    <input type="text" name="designation"><br><br>
+
+    <input type="submit" value="Submit">
+
+</form>
+
+</body>
+</html>
+
+=======================================================================================
+==========================================================
+
+13 Create a Flask Contact Form containing Name, Email, Subject, and Message. 
+Check whether all fields are filled and display an appropriate flash message.
+
+project/
+│
+├── app.py
+│
+└── templates/
+    └── contact.html
+
+    app.py.................................
+    
+
+from flask import Flask, render_template, request, flash
+
+app = Flask(__name__)
+app.secret_key = "secret"
+
+@app.route('/')
+def contact():
+    return render_template('contact.html')
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    name = request.form['name']
+    email = request.form['email']
+    subject = request.form['subject']
+    message = request.form['message']
+
+    if name and email and subject and message:
+        flash("Contact form submitted successfully!")
+    else:
+        flash("Please fill all fields.")
+
+    return render_template('contact.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+templates/contact.html................................
+
+  <!DOCTYPE html>
+<html>
+<head>
+    <title>Contact Form</title>
+</head>
+<body>
+
+<h2>Contact Form</h2>
+
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endwith %}
+
+<form action="/submit" method="POST">
+
+    Name:
+    <input type="text" name="name"><br><br>
+
+    Email:
+    <input type="email" name="email"><br><br>
+
+    Subject:
+    <input type="text" name="subject"><br><br>
+
+    Message:
+    <textarea name="message"></textarea><br><br>
+
+    <input type="submit" value="Submit">
+
+</form>
+
+</body>
+</html>  
+=========================================================================================================
+=====================================================
+
+14.
+Create a Flask Event Registration Form containing Participant Name, Mobile
+Number, and Event Name. Provide three event options and display the submitted
+information using a flash message
+
+project/
+│
+├── app.py
+│
+└── templates/
+    └── event.html
+
+    app.py.............................
+
+from flask import Flask, render_template, request, flash
+
+app = Flask(__name__)
+app.secret_key = "secret"
+
+@app.route('/')
+def event():
+    return render_template('event.html')
+
+@app.route('/register', methods=['POST'])
+def register():
+    name = request.form['name']
+    mobile = request.form['mobile']
+    event_name = request.form['event_name']
+
+    flash(f"Registration Successful! Name: {name}, Mobile: {mobile}, Event: {event_name}")
+
+    return render_template('event.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+templates/event.html..................
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Registration</title>
+</head>
+<body>
+
+<h2>Event Registration Form</h2>
+
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endwith %}
+
+<form action="/register" method="POST">
+
+    Participant Name:
+    <input type="text" name="name"><br><br>
+
+    Mobile Number:
+    <input type="text" name="mobile"><br><br>
+
+    Event Name:
+    <select name="event_name">
+        <option value="Coding Competition">Coding Competition</option>
+        <option value="Quiz Competition">Quiz Competition</option>
+        <option value="Project Exhibition">Project Exhibition</option>
+    </select>
+    <br><br>
+
+    <input type="submit" value="Register">
+
+</form>
+
+</body>
+</html>
+
+
+=======================================================================
+==================================================================
+
+
+15. Create a Flask Electricity Bill Form containing Consumer Name, Consumer Number, and Units Consumed.
+Calculate the electricity bill according to different unit slabs and display the total bill.
+
+
+project/
+│
+├── app.py
+│
+└── templates/
+    └── bill.html
+
+
+app.py.....................................
+
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route('/')
+def bill():
+    return render_template('bill.html')
+
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    name = request.form['name']
+    number = request.form['number']
+    units = int(request.form['units'])
+
+    if units <= 100:
+        bill = units * 2
+    elif units <= 200:
+        bill = (100 * 2) + ((units - 100) * 3)
+    elif units <= 300:
+        bill = (100 * 2) + (100 * 3) + ((units - 200) * 4)
+    else:
+        bill = (100 * 2) + (100 * 3) + (100 * 4) + ((units - 300) * 5)
+
+    return f"""
+    <h2>Electricity Bill</h2>
+    <p>Consumer Name: {name}</p>
+    <p>Consumer Number: {number}</p>
+    <p>Units Consumed: {units}</p>
+    <p>Total Bill: ₹{bill}</p>
+    """
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+templates/bill.html.......................................
+
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Electricity Bill</title>
+</head>
+<body>
+
+<h2>Electricity Bill Form</h2>
+
+<form action="/calculate" method="POST">
+
+    Consumer Name:
+    <input type="text" name="name"><br><br>
+
+    Consumer Number:
+    <input type="text" name="number"><br><br>
+
+    Units Consumed:
+    <input type="number" name="units"><br><br>
+
+    <input type="submit" value="Calculate Bill">
+
+</form>
+
+</body>
+</html>
+
+==============================================================================
+======================================================================
+
+16. Create a Flask Age Calculator Form that accepts a person’s Name and Date of Birth. 
+Calculate and display the person's age on the result page.
+Display an appropriate flash message if the required input is missing.
+
+project/
+│
+├── app.py
+│
+└── templates/
+    └── age.html
+
+app.py.......................................
+
+from flask import Flask, render_template, request, flash
+from datetime import date
+
+app = Flask(__name__)
+app.secret_key = "secret"
+
+@app.route('/')
+def age():
+    return render_template('age.html')
+
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    name = request.form['name']
+    dob = request.form['dob']
+
+    if not name or not dob:
+        flash("Please enter Name and Date of Birth.")
+        return render_template('age.html')
+
+    dob = date.fromisoformat(dob)
+    today = date.today()
+
+    age = today.year - dob.year
+
+    if (today.month, today.day) < (dob.month, dob.day):
+        age = age - 1
+
+    return f"""
+    <h2>Age Calculator Result</h2>
+    <p>Name: {name}</p>
+    <p>Age: {age} years</p>
+    """
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+ templates/age.html........................
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Age Calculator</title>
+</head>
+<body>
+
+<h2>Age Calculator Form</h2>
+
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endwith %}
+
+<form action="/calculate" method="POST">
+
+    Name:
+    <input type="text" name="name"><br><br>
+
+    Date of Birth:
+    <input type="date" name="dob"><br><br>
+
+    <input type="submit" value="Calculate Age">
+
+</form>
+
+</body>
+</html>
+
+
+================================
+==============================================================================================
+
+16.
+Create a Flask Age Calculator Form that accepts a person’s Name and Date of Birth.
+Calculate and display the person's age on the result page. Display an appropriate
+flash message if the required input is missing.
+
+project/
+│
+├── app.py
+│
+└── templates/
+    └── age.html
+
+    app.py............................
+    
+from flask import Flask, render_template, request, flash
+from datetime import date
+
+app = Flask(__name__)
+app.secret_key = "secret"
+
+@app.route('/')
+def home():
+    return render_template('age.html')
+
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    name = request.form['name']
+    dob = request.form['dob']
+
+    if not name or not dob:
+        flash("Please enter Name and Date of Birth.")
+        return render_template('age.html')
+
+    dob = date.fromisoformat(dob)
+    today = date.today()
+
+    age = today.year - dob.year
+
+    if (today.month, today.day) < (dob.month, dob.day):
+        age = age - 1
+
+    return f"""
+    <h2>Age Calculator Result</h2>
+    <p>Name: {name}</p>
+    <p>Age: {age} years</p>
+    """
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+    templates/age.html....................................
+
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Age Calculator</title>
+</head>
+<body>
+
+<h2>Age Calculator Form</h2>
+
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endwith %}
+
+<form action="/calculate" method="POST">
+
+    Name:
+    <input type="text" name="name"><br><br>
+
+    Date of Birth:
+    <input type="date" name="dob"><br><br>
+
+    <input type="submit" value="Calculate Age">
+
+</form>
+
+</body>
+</html>
+
+
+
+=================================================================+==
+===================================================================================
+17. Create a Flask Temperature Conversion Form that accepts a temperature value and allows the user to
+select Celsius to Fahrenheit or Fahrenheit to Celsius. Perform the selected conversion and display the result.
+
+project/
+│
+├── app.py
+│
+└── templates/
+    └── temperature.html
+
+    app.py...............................
+    
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return render_template('temperature.html')
+
+@app.route('/convert', methods=['POST'])
+def convert():
+    temperature = float(request.form['temperature'])
+    conversion = request.form['conversion']
+
+    if conversion == 'CtoF':
+        result = (temperature * 9/5) + 32
+        message = f"{temperature} °C = {result} °F"
+
+    else:
+        result = (temperature - 32) * 5/9
+        message = f"{temperature} °F = {result} °C"
+
+    return f"""
+    <h2>Temperature Conversion Result</h2>
+    <p>{message}</p>
+    """
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+    templates/temperature.html..........................................
+
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Temperature Conversion</title>
+</head>
+<body>
+
+<h2>Temperature Conversion Form</h2>
+
+<form action="/convert" method="POST">
+
+    Temperature:
+    <input type="number" step="any" name="temperature">
+
+    <br><br>
+
+    Conversion:
+    <select name="conversion">
+        <option value="CtoF">Celsius to Fahrenheit</option>
+        <option value="FtoC">Fahrenheit to Celsius</option>
+    </select>
+
+    <br><br>
+
+    <input type="submit" value="Convert">
+
+</form>
+
+</body>
+</html>
+
+
++===========================================================================================
+============================================
+
+18. Create a Flask Student Attendance Form containing Student Name, Total Working Days,
+and Days Present. Calculate the attendance percentage and display whether the student is Eligible or Not
+Eligible based on a minimum attendance requirement of 75%. Display appropriate flash messages
+
+app.py....................................
+
+from flask import Flask, render_template, request, flash
+
+app = Flask(__name__)
+app.secret_key = "secret"
+
+@app.route('/')
+def home():
+    return render_template('attendance.html')
+
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    name = request.form['name']
+    total_days = int(request.form['total_days'])
+    present_days = int(request.form['present_days'])
+
+    percentage = (present_days / total_days) * 100
+
+    if percentage >= 75:
+        flash(f"{name}: Eligible. Attendance = {percentage:.2f}%")
+    else:
+        flash(f"{name}: Not Eligible. Attendance = {percentage:.2f}%")
+
+    return render_template('attendance.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+    
+templates/attendance.html......................................
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Attendance</title>
+</head>
+<body>
+
+<h2>Student Attendance Form</h2>
+
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endwith %}
+
+<form action="/calculate" method="POST">
+
+    Student Name:
+    <input type="text" name="name"><br><br>
+
+    Total Working Days:
+    <input type="number" name="total_days"><br><br>
+
+    Days Present:
+    <input type="number" name="present_days"><br><br>
+
+    <input type="submit" value="Calculate Attendance">
+
+</form>
+
+</body>
+</html>
+
+
+============================================================================================
+=========================================
+
+
+19 Create a Flask Restaurant Order Form containing Customer Name, Food Item,Quantity, and Price.
+Calculate the subtotal, apply a 5% service charge, add 18% GST,and display the final bill.
+Validate the input fields and display appropriate flash messages for invalid input.
+
+app.py.............................
+
+
+from flask import Flask, render_template, request, flash
+
+app = Flask(__name__)
+app.secret_key = "secret"
+
+@app.route('/')
+def home():
+    return render_template('order.html')
+
+@app.route('/order', methods=['POST'])
+def order():
+    name = request.form['name']
+    food = request.form['food']
+    quantity = request.form['quantity']
+    price = request.form['price']
+
+    if not name or not food or not quantity or not price:
+        flash("Please fill all fields.")
+        return render_template('order.html')
+
+    quantity = int(quantity)
+    price = float(price)
+
+    if quantity <= 0 or price <= 0:
+        flash("Quantity and Price must be greater than 0.")
+        return render_template('order.html')
+
+    subtotal = quantity * price
+    service_charge = subtotal * 5 / 100
+    gst = (subtotal + service_charge) * 18 / 100
+    final_bill = subtotal + service_charge + gst
+
+    return f"""
+    <h2>Restaurant Bill</h2>
+    <p>Customer Name: {name}</p>
+    <p>Food Item: {food}</p>
+    <p>Quantity: {quantity}</p>
+    <p>Price: ₹{price}</p>
+    <p>Subtotal: ₹{subtotal}</p>
+    <p>Service Charge (5%): ₹{service_charge}</p>
+    <p>GST (18%): ₹{gst}</p>
+    <p>Final Bill: ₹{final_bill}</p>
+    """
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+    
+templates/order.html.....................................
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurant Order</title>
+</head>
+<body>
+
+<h2>Restaurant Order Form</h2>
+
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endwith %}
+
+<form action="/order" method="POST">
+
+    Customer Name:
+    <input type="text" name="name"><br><br>
+
+    Food Item:
+    <input type="text" name="food"><br><br>
+
+    Quantity:
+    <input type="number" name="quantity"><br><br>
+
+    Price:
+    <input type="number" step="any" name="price"><br><br>
+
+    <input type="submit" value="Calculate Bill">
+
+</form>
+
+</body>
+</html>
+
+=================================================================================
+========================================================================================
+20. Develop a Flask-based Student Management System using SQLite that creates a database with a student table containing id,
+name, age, and course fields, allows users to insert new student records, 
+and displays all student records on the home page.
+
+project/
+│
+├── app.py
+└── templates/
+    └── index.html
+
+    app.py..............................
+    
+from flask import Flask, render_template, request
+import sqlite3
+
+app = Flask(__name__)
+
+def create_database():
+    conn = sqlite3.connect('students.db')
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS student (
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            age INTEGER,
+            course TEXT
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
+
+create_database()
+
+@app.route('/')
+def home():
+    conn = sqlite3.connect('students.db')
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM student')
+    students = cursor.fetchall()
+
+    conn.close()
+
+    return render_template('index.html', students=students)
+
+@app.route('/add', methods=['POST'])
+def add_student():
+    id = request.form['id']
+    name = request.form['name']
+    age = request.form['age']
+    course = request.form['course']
+
+    conn = sqlite3.connect('students.db')
+    cursor = conn.cursor()
+
+    cursor.execute(
+        'INSERT INTO student VALUES (?, ?, ?, ?)',
+        (id, name, age, course)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return home()
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+    
+templates/index.html.......................................
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+</head>
+<body>
+
+<h2>Student Management System</h2>
+
+<form action="/add" method="POST">
+
+    ID:
+    <input type="number" name="id"><br><br>
+
+    Name:
+    <input type="text" name="name"><br><br>
+
+    Age:
+    <input type="number" name="age"><br><br>
+
+    Course:
+    <input type="text" name="course"><br><br>
+
+    <input type="submit" value="Add Student">
+
+</form>
+
+<h2>Student Records</h2>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Course</th>
+    </tr>
+
+    {% for student in students %}
+    <tr>
+        <td>{{ student[0] }}</td>
+        <td>{{ student[1] }}</td>
+        <td>{{ student[2] }}</td>
+        <td>{{ student[3] }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+</body>
+</html>
+
+=============================================================================================
+=====================================================================
+
+21. Develop a complete Flask-based Student Management System using SQLite. 
+Implement all CRUD operations: ● Create ● Read ● Update ● Delete Display all records
+in an HTML table and verify each database operation on the web browser.
+
+project/
+│
+├── app.py
+└── templates/
+    ├── index.html
+    └── edit.html
+
+
+    app.py..................................
+
+    from flask import Flask, render_template, request, redirect
+import sqlite3
+
+app = Flask(__name__)
+
+
+def create_database():
+    conn = sqlite3.connect('students.db')
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS student (
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            age INTEGER,
+            course TEXT
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
+
+
+create_database()
+
+
+# READ
+@app.route('/')
+def home():
+    conn = sqlite3.connect('students.db')
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM student')
+    students = cursor.fetchall()
+
+    conn.close()
+
+    return render_template('index.html', students=students)
+
+
+# CREATE
+@app.route('/add', methods=['POST'])
+def add():
+    id = request.form['id']
+    name = request.form['name']
+    age = request.form['age']
+    course = request.form['course']
+
+    conn = sqlite3.connect('students.db')
+    cursor = conn.cursor()
+
+    cursor.execute(
+        'INSERT INTO student VALUES (?, ?, ?, ?)',
+        (id, name, age, course)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect('/')
+
+
+# UPDATE
+@app.route('/update/<int:id>', methods=['GET', 'POST'])
+def update(id):
+
+    if request.method == 'POST':
+        name = request.form['name']
+        age = request.form['age']
+        course = request.form['course']
+
+        conn = sqlite3.connect('students.db')
+        cursor = conn.cursor()
+
+        cursor.execute(
+            'UPDATE student SET name=?, age=?, course=? WHERE id=?',
+            (name, age, course, id)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return redirect('/')
+
+    conn = sqlite3.connect('students.db')
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM student WHERE id=?', (id,))
+    student = cursor.fetchone()
+
+    conn.close()
+
+    return render_template('edit.html', student=student)
+
+
+# DELETE
+@app.route('/delete/<int:id>')
+def delete(id):
+    conn = sqlite3.connect('students.db')
+    cursor = conn.cursor()
+
+    cursor.execute('DELETE FROM student WHERE id=?', (id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect('/')
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+templates/index.html..................................................
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+</head>
+<body>
+
+<h2>Student Management System</h2>
+
+<h3>Add Student</h3>
+
+<form action="/add" method="POST">
+
+    ID:
+    <input type="number" name="id"><br><br>
+
+    Name:
+    <input type="text" name="name"><br><br>
+
+    Age:
+    <input type="number" name="age"><br><br>
+
+    Course:
+    <input type="text" name="course"><br><br>
+
+    <input type="submit" value="Add Student">
+
+</form>
+
+<h3>Student Records</h3>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Course</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for student in students %}
+    <tr>
+        <td>{{ student[0] }}</td>
+        <td>{{ student[1] }}</td>
+        <td>{{ student[2] }}</td>
+        <td>{{ student[3] }}</td>
+
+        <td>
+            <a href="/update/{{ student[0] }}">Update</a>
+            |
+            <a href="/delete/{{ student[0] }}">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+</body>
+</html>
+
+templates/edit.html...............................
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Student</title>
+</head>
+<body>
+
+<h2>Update Student</h2>
+
+<form action="/update/{{ student[0] }}" method="POST">
+
+    Name:
+    <input type="text" name="name" value="{{ student[1] }}"><br><br>
+
+    Age:
+    <input type="number" name="age" value="{{ student[2] }}"><br><br>
+
+    Course:
+    <input type="text" name="course" value="{{ student[3] }}"><br><br>
+
+    <input type="submit" value="Update Student">
+
+</form>
+
+</body>
+</html>
+
+==================================================================================================
+
+    
+
+
